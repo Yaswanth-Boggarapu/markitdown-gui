@@ -2,11 +2,12 @@
 
 # ⬡ MarkItDown GUI
 
-**A local macOS desktop app to convert any file to Markdown**  
+**A local web-based desktop app to convert any file to Markdown**  
 Built on [Microsoft's MarkItDown](https://github.com/microsoft/markitdown) · Dark mode · No internet required
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://python.org)
-[![Platform](https://img.shields.io/badge/Platform-macOS-lightgrey?logo=apple)](https://apple.com/macos)
+[![Flask](https://img.shields.io/badge/Flask-3.x-lightgrey?logo=flask)](https://flask.palletsprojects.com)
+[![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux%20%7C%20Windows-lightgrey?logo=apple)](https://apple.com/macos)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![MarkItDown](https://img.shields.io/badge/Powered%20by-MarkItDown-blueviolet)](https://github.com/microsoft/markitdown)
 
@@ -19,9 +20,9 @@ Built on [Microsoft's MarkItDown](https://github.com/microsoft/markitdown) · Da
 - 📂 **Browse or drag & drop** any file into the app
 - ⚡ **One-click conversion** to clean Markdown
 - 💾 **Save as `.md`** or **copy to clipboard** instantly
-- 🌙 **Dark mode UI** — easy on the eyes
-- 🔒 **Fully local** — no data leaves your machine
-- 📦 **Packaged as a `.dmg`** — drag to Applications and run
+- 🌙 **Dark mode UI** — runs in your browser, looks native
+- 🔒 **Fully local** — no data leaves your machine, no internet needed
+- 🖥️ **Auto-opens in browser** when you run `python3 app.py`
 
 ---
 
@@ -37,46 +38,21 @@ Built on [Microsoft's MarkItDown](https://github.com/microsoft/markitdown) · Da
 
 ---
 
-## 🚀 Build the DMG (on your Mac)
-
-### Prerequisites
-
-- macOS 11+
-- Python 3.10+ — [download here](https://python.org) if needed
-
-### Steps
+## 🚀 Setup & Run
 
 ```bash
-# 1. Clone this repo
+# 1. Clone the repo
 git clone https://github.com/Yaswanth-Boggarapu/markitdown-gui.git
 cd markitdown-gui
 
-# 2. Make the build script executable
-chmod +x build.sh
+# 2. Install dependencies
+pip3 install --break-system-packages flask 'markitdown[all]'
 
-# 3. Run it
-./build.sh
-```
-
-The script will automatically:
-1. Install `markitdown[all]`, `pyinstaller`, and `dmgbuild`
-2. Build `MarkItDown.app` via PyInstaller
-3. Package it into `MarkItDown.dmg`
-
-### Install the App
-
-1. Double-click `MarkItDown.dmg`
-2. Drag `MarkItDown.app` → `/Applications`
-3. First launch: **right-click → Open** (to bypass Gatekeeper on unsigned apps)
-
----
-
-## 🖥️ Run Without Building (Dev Mode)
-
-```bash
-pip install 'markitdown[all]'
+# 3. Run
 python3 app.py
 ```
+
+The app auto-opens at **http://localhost:5177** in your browser.
 
 ---
 
@@ -84,9 +60,9 @@ python3 app.py
 
 ```
 markitdown-gui/
-├── app.py              # Main GUI application (tkinter, dark mode)
-├── markitdown.spec     # PyInstaller bundle config for macOS .app
-├── build.sh            # One-command build script → .app + .dmg
+├── app.py              # Flask backend — handles file upload & conversion
+├── static/
+│   └── index.html      # Full dark-mode UI (single file, no build step)
 └── README.md
 ```
 
@@ -94,9 +70,10 @@ markitdown-gui/
 
 ## 🔧 How It Works
 
-1. `app.py` — tkinter GUI that calls `MarkItDown.convert(filepath)` in a background thread
-2. `markitdown.spec` — PyInstaller spec that bundles the app + all dependencies into `MarkItDown.app`
-3. `build.sh` — shell script that installs deps, runs PyInstaller, then uses `dmgbuild` to wrap it into a distributable `.dmg`
+1. `app.py` starts a local Flask server on port `5177` and auto-opens your browser
+2. You drop a file or browse — it's uploaded to the local server via `POST /convert`
+3. Flask passes the file to `MarkItDown.convert()` and returns the Markdown
+4. The UI renders the result — you can save as `.md` or copy to clipboard
 
 ---
 
@@ -105,8 +82,7 @@ markitdown-gui/
 | Package | Purpose |
 |---|---|
 | [`markitdown[all]`](https://github.com/microsoft/markitdown) | File → Markdown conversion engine by Microsoft |
-| [`pyinstaller`](https://pyinstaller.org) | Packages Python app into standalone `.app` |
-| [`dmgbuild`](https://github.com/al45tair/dmgbuild) | Creates macOS `.dmg` disk image |
+| [`flask`](https://flask.palletsprojects.com) | Lightweight local web server |
 
 ---
 
